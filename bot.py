@@ -215,7 +215,11 @@ Simply send any message and I'll respond!
 
 Enjoy chatting! 🚀"""
     
-    await update.message.reply_text(help_text, parse_mode='Markdown')
+    # Check if called from callback or command
+    if update.message:
+        await update.message.reply_text(help_text, parse_mode='Markdown')
+    elif update.callback_query:
+        await update.callback_query.message.reply_text(help_text, parse_mode='Markdown')
 
 async def reset_conversation(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle /reset command"""
@@ -224,14 +228,15 @@ async def reset_conversation(update: Update, context: ContextTypes.DEFAULT_TYPE)
     if user_id in user_conversations:
         msg_count = len(user_conversations[user_id])
         del user_conversations[user_id]
-        await update.message.reply_text(
-            f"✅ **Conversation Reset!**\n\nCleared {msg_count} messages. Starting fresh!",
-            parse_mode='Markdown'
-        )
+        response_text = f"✅ **Conversation Reset!**\n\nCleared {msg_count} messages. Starting fresh!"
     else:
-        await update.message.reply_text(
-            "💭 No conversation history found. Start chatting!"
-        )
+        response_text = "💭 No conversation history found. Start chatting!"
+    
+    # Check if called from callback or command
+    if update.message:
+        await update.message.reply_text(response_text, parse_mode='Markdown')
+    elif update.callback_query:
+        await update.callback_query.message.reply_text(response_text, parse_mode='Markdown')
 
 async def change_model(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle /model command"""
@@ -269,11 +274,19 @@ async def change_model(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 Choose your preferred model:"""
     
-    await update.message.reply_text(
-        model_text,
-        parse_mode='Markdown',
-        reply_markup=reply_markup
-    )
+    # Check if called from callback or command
+    if update.message:
+        await update.message.reply_text(
+            model_text,
+            parse_mode='Markdown',
+            reply_markup=reply_markup
+        )
+    elif update.callback_query:
+        await update.callback_query.message.reply_text(
+            model_text,
+            parse_mode='Markdown',
+            reply_markup=reply_markup
+        )
 
 async def stats_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle /stats command"""
@@ -288,13 +301,17 @@ async def stats_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 🧠 **Active Conversations:** {len(user_conversations)}
 ❌ **Errors:** {bot_stats['errors']}
 
-🚀 **Bot Version:** 1.0.0
+🚀 **Bot Version:** 1.0.1
 🤖 **AI Provider:** SambaNova
 ⚡ **Status:** Operational
 
 Thank you for using the bot! 🙏"""
     
-    await update.message.reply_text(stats_text, parse_mode='Markdown')
+    # Check if called from callback or command
+    if update.message:
+        await update.message.reply_text(stats_text, parse_mode='Markdown')
+    elif update.callback_query:
+        await update.callback_query.message.reply_text(stats_text, parse_mode='Markdown')
 
 # Message Handler
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
